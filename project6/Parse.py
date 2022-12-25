@@ -47,25 +47,24 @@ class Parser:
         after first pass we can just use SymbolTable to look up
         """
         symbol = self.current_command
+        if self.get_command_type() == "L":
+            symbol = symbol[1:-1]
+            SymbolTable.update_symbols(symbol=symbol, address=self.line_num)
+            return SymbolTable.get_symbol(symbol)
 
-        if "@" in symbol:
-            symbol = symbol.replace("@", "")
+        if symbol[0] == "@":
+            symbol = symbol[1:]
             # If the rest of the symbol is digit then the programmer is asking
             # for that memory address, no need to allocate ram address 
             if symbol.isdigit():
                 SymbolTable.update_symbols(symbol=symbol, address=int(symbol))
                 return SymbolTable.get_symbol(symbol)
-        else:
-            # Clean up label for updating table
-            symbol = symbol.replace("(", "")
-            symbol = symbol.replace(")", "")
-        if self.get_command_type() == "L":
-            SymbolTable.update_symbols(symbol=symbol, address=self.line_num)
-        elif not SymbolTable.contains(symbol):
-            SymbolTable.update_symbols(symbol=symbol, address=self.nxt_addr)
-            self.nxt_addr += 1
+
+            elif not SymbolTable.contains(symbol):
+                SymbolTable.update_symbols(symbol=symbol, address=self.nxt_addr)
+                self.nxt_addr += 1
         
-        return SymbolTable.get_symbol(symbol)
+            return SymbolTable.get_symbol(symbol)
     
     def dest(self) -> str:
         """
