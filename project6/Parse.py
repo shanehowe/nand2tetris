@@ -46,12 +46,9 @@ class Parser:
         Will really only be used on the first pass,
         after first pass we can just use SymbolTable to look up
         """
-        # TODO: Clean this up this method, perhaps first pass method then second pass...
         symbol = self.current_command
 
         if "@" in symbol:
-            if SymbolTable.contains(symbol):
-                return SymbolTable.get_symbol(symbol)
             symbol = symbol.replace("@", "")
             # If the rest of the symbol is digit then the programmer is asking
             # for that memory address, no need to allocate ram address 
